@@ -190,11 +190,6 @@ GET /status/filter?status=Enviado
 Authorization: Bearer <TOKEN_ADMIN>
 ```
 
-``` JSON
-GET /status/filter?status=Enviado
-Authorization: Bearer <TOKEN_ADMIN>
-```
-
 Respuesta:
 ``` JSON
 [
