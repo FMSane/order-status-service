@@ -119,7 +119,7 @@ Respuesta:
 }
 ```
 
-#### Ver los estados de las órdenes del usuario autenticado
+#### Ver los estados de las órdenes del usuario actual autenticado
 ``` sql
 GET /status
 Authorization: Bearer <TOKEN_USER>
@@ -138,4 +138,61 @@ Respuesta:
   }
 ]
 ```
-Authorization: Bearer <TOKEN>
+
+#### Obtener el listado de todas las órdenes y sus estados (sólo admin)
+``` sql
+GET status/all
+Authorization: Bearer <TOKEN_ADMIN>
+```
+
+Respuesta:
+``` JSON
+[
+    {
+        "id": "6913d0ed4db2631092337add",
+        "order_id": "88242cab-53de-4f1f-9a82-7d99165f6014",
+        "user_id": "6913bf285e55b075693ca1d8",
+        "status": "Enviado",
+        "updated_at": "2025-11-12T02:44:56.276Z"
+    },
+    {
+        "id": "6913e3833d346cc666bf096b",
+        "order_id": "30c08621-2eca-418b-a314-3112f3106230",
+        "user_id": "69123bca4f816b60d535c741",
+        "status": "Pendiente",
+        "updated_at": "2025-11-12T01:31:47.71Z"
+    }
+{
+        "id": "6913e3833d346cc666bf096c",
+        "order_id": "30c08621-2eca-348b-a314-3112f323819",
+        "user_id": "34975zca4f816b60d538m357",
+        "status": "En Preparación",
+        "updated_at": "2025-11-12T02:40:32.71Z"
+    }
+]
+```
+
+#### Obtener ordenes por estado
+
+``` sql
+GET /status/filter?status=Enviado
+Authorization: Bearer <TOKEN_ADMIN>
+```
+
+``` JSON
+GET /status/filter?status=Enviado
+Authorization: Bearer <TOKEN_ADMIN>
+```
+
+Respuesta:
+``` JSON
+[
+    {
+        "id": "6913d0ed4db2631092337add",
+        "order_id": "88242cab-53de-4f1f-9a82-7d99165f6014",
+        "user_id": "6913bf285e55b075693ca1d8",
+        "status": "Enviado",
+        "updated_at": "2025-11-12T02:44:56.276Z"
+    }
+]
+```
