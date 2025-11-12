@@ -3,6 +3,7 @@
 Este microservicio se encarga de manejar los estados de las órdenes dentro del sistema, y un catálogo base de estados administrable por usuarios con rol de administrador.
 Forma parte del ecosistema de microservicios, y se comunica con el microservicio de autenticación (auth-service) para validar los tokens JWT y los permisos.
 
+
 ## Roles y permisos
 * Usuario
   * Ver el estado de sus propias órdenes.
@@ -11,6 +12,7 @@ Forma parte del ecosistema de microservicios, y se comunica con el microservicio
   * Crear nuevos estados en el catálogo base.
   * Ver el catálogo completo (que contiene a los estados base).
   * Cambiar el estado de cualquier orden.
+
  
 ## Requisitos previos
 * Docker y Docker Compose instalados.
@@ -18,11 +20,13 @@ Forma parte del ecosistema de microservicios, y se comunica con el microservicio
 * Microservicio de ordenes (prod-orders-go) en ejecución.
 * Base de datos MongoDB accesible (puede estar en otro contenedor).
 
+
 ## Build y ejecución con Docker
 En la raíz del proyecto abrir una nueva terminal y ejecutar:
 ``` bash
 docker-compose up --build
 ```
+
 
 ## Autenticación
 Cada endpoint que modifica información requiere un token JWT válido.
@@ -31,6 +35,7 @@ Una vez obtenido el token correspondiente según el caso de uso (admin o user), 
 ``` bash
 Authorization: Bearer <TOKEN>
 ```
+
 
 ## Endpoints
 
@@ -52,6 +57,7 @@ Respuesta:
 ]
 ```
 
+
 #### Crear nuevo estado en el catálogo
 ``` pgsql
 POST /admin/status/catalog
@@ -71,6 +77,7 @@ Respuesta:
   "message": "status added to catalog"
 }
 ```
+
 
 ### 2. Estados de órdenes reales
 #### (Automático) Crear un nuevo estado al realizar una orden
@@ -98,6 +105,7 @@ Respuesta esperada:
 }
 ```
 
+
 #### Cambiar el estado de una orden (solo admin)
 ``` pgsql
 PUT /status/:order_id
@@ -119,6 +127,7 @@ Respuesta:
 }
 ```
 
+
 #### Ver los estados de las órdenes del usuario actual autenticado
 ``` sql
 GET /status
@@ -138,6 +147,7 @@ Respuesta:
   }
 ]
 ```
+
 
 #### Obtener el listado de todas las órdenes y sus estados (sólo admin)
 ``` sql
@@ -171,6 +181,7 @@ Respuesta:
     }
 ]
 ```
+
 
 #### Obtener ordenes por estado
 
