@@ -1,0 +1,66 @@
+package repository
+
+import (
+	"context"
+	"time"
+
+	"order-status-service/internal/model"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+type CatalogRepository struct {
+	Collection *mongo.Collection
+}
+
+func NewCatalogRepository(db *mongo.Database) *CatalogRepository {
+	return &CatalogRepository{
+		Collection: db.Collection("statuses_catalog"),
+	}
+}
+
+func (r *CatalogRepository) GetAll() ([]model.StatusCatalog, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cursor, err := r.Collection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []model.StatusCatalog
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func (r *CatalogRepository) Count() (int64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	return r.Collection.CountDocuments(ctx, bson.M{})
+}
+
+func (r *CatalogRepository) InsertMany(defaults []interface{}) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err := r.Collection.InsertMany(ctx, defaults)
+	return err
+}
+
+func (r *CatalogRepository) ExistsByName(name string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	count, err := r.Collection.CountDocuments(ctx, bson.M{"name": name})
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *CatalogRepository) InsertOne(ctx context.Context, status model.StatusCatalog) error {
+	_, err := r.Collection.InsertOne(ctx, status)
+	return err
+}
