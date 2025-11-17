@@ -1,3 +1,4 @@
+// order_status_mapper.go
 package mapper
 
 import (
@@ -37,4 +38,16 @@ func ToOrderStatusDTOs(entities []model.OrderStatus) []dto.OrderStatusDTO {
 		dtos[i] = ToOrderStatusDTO(e)
 	}
 	return dtos
+}
+
+func ToShippingEntity(s dto.ShippingDTO) model.ShippingInfo {
+	return model.ShippingInfo{
+		AddressLine1: s.AddressLine1,
+		AddressLine2: s.AddressLine2,
+		City:         s.City,
+		Province:     s.Province,
+		Country:      s.Country,
+		Zipcode:      s.Zipcode,
+		Comments:     s.Comments,
+	}
 }

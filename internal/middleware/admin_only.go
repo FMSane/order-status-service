@@ -1,6 +1,8 @@
+// admin_only.go
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,5 +24,7 @@ func AdminOnly() gin.HandlerFunc {
 			return
 		}
 		c.Next()
+		fmt.Println("PERMISSIONS:", perms)
 	}
+
 }

@@ -1,3 +1,4 @@
+// auth_middleware.go
 package middleware
 
 import (
@@ -19,7 +20,9 @@ func AuthMiddleware(authService *service.AuthService) gin.HandlerFunc {
 		}
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
+		token = strings.TrimSpace(token)
 		user, err := authService.ValidateToken(token)
+
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid or expired token"})
 			c.Abort()

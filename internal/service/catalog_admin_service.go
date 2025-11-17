@@ -1,3 +1,4 @@
+// catalog_admin_service.go
 package service
 
 import (
@@ -36,4 +37,8 @@ func (s *CatalogAdminService) CreateStatus(name string) error {
 // Devuelve todos los estados del catálogo base
 func (s *CatalogAdminService) GetAll() ([]model.StatusCatalog, error) {
 	return s.repo.GetAll()
+}
+
+func (s *CatalogAdminService) GetByID(id string) (*model.StatusCatalog, error) {
+	return s.repo.GetByID(id)
 }

@@ -1,3 +1,4 @@
+// create_catalog_status_request.go
 package dto
 
 type CreateCatalogStatusRequest struct {

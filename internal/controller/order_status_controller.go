@@ -1,3 +1,4 @@
+// order_status_controller.go
 package controller
 
 import (
@@ -104,6 +105,51 @@ func (ctrl *OrderStatusController) CreateStatus(c *gin.Context) {
 
 func (ctrl *OrderStatusController) UpdateStatus(c *gin.Context) {
 	permissions := c.GetStringSlice("userPermissions")
+
+	role := "client"
+	for _, p := range permissions {
+		if p == "admin" {
+			role = "admin"
+			break
+		}
+	}
+
+	userID := c.GetString("userID")
+	id := c.Param("id")
+
+	var req dto.UpdateOrderStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Si no es admin, validar estados prohibidos
+	if role == "client" {
+		// Solo se permite cambiar a CANCELADO
+		ok, err := ctrl.Service.IsCancelStatus(req.StatusID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		if !ok {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden: admin access required"})
+			return
+		}
+	}
+
+	result, err := ctrl.Service.ChangeStatus(id, req.StatusID, userID, role, req.Reason)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (ctrl *OrderStatusController) FilterByStatus(c *gin.Context) {
+
+	// SOLO ADMIN
+	permissions := c.GetStringSlice("userPermissions")
 	isAdmin := false
 	for _, p := range permissions {
 		if p == "admin" {
@@ -111,39 +157,34 @@ func (ctrl *OrderStatusController) UpdateStatus(c *gin.Context) {
 			break
 		}
 	}
-
 	if !isAdmin {
 		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden: admin access required"})
 		return
 	}
 
-	id := c.Param("id")
-	var req dto.UpdateOrderStatusRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	statusID := c.Query("status_id")
+	if statusID != "" {
+		results, err := ctrl.Service.GetByStatusID(statusID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, results)
 		return
 	}
 
-	status, err := ctrl.Service.UpdateStatus(id, req)
+	statusName := c.Query("status")
+	if statusName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing status or status_id param"})
+		return
+	}
+
+	results, err := ctrl.Service.GetByStatus(statusName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, status)
-}
 
-func (ctrl *OrderStatusController) FilterByStatus(c *gin.Context) {
-	status := c.Query("status")
-	if status == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing status query param"})
-		return
-	}
-
-	results, err := ctrl.Service.GetByStatus(status)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 	c.JSON(http.StatusOK, results)
 }
 

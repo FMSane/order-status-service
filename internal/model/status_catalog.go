@@ -1,3 +1,4 @@
+// status_catalog.go
 package model
 
 import (

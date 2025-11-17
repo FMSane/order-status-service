@@ -1,3 +1,4 @@
+// catalog_repository.go
 package repository
 
 import (
@@ -7,6 +8,7 @@ import (
 	"order-status-service/internal/model"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -63,4 +65,39 @@ func (r *CatalogRepository) ExistsByName(name string) (bool, error) {
 func (r *CatalogRepository) InsertOne(ctx context.Context, status model.StatusCatalog) error {
 	_, err := r.Collection.InsertOne(ctx, status)
 	return err
+}
+
+func (r *CatalogRepository) ExistsByID(ctx context.Context, id primitive.ObjectID) (bool, error) {
+	count, err := r.Collection.CountDocuments(ctx, bson.M{"_id": id})
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *CatalogRepository) FindByID(ctx context.Context, id primitive.ObjectID) (model.StatusCatalog, error) {
+	var res model.StatusCatalog
+	err := r.Collection.FindOne(ctx, bson.M{"_id": id}).Decode(&res)
+	return res, err
+}
+
+func (r *CatalogRepository) FindByName(ctx context.Context, name string) (model.StatusCatalog, error) {
+	var res model.StatusCatalog
+	err := r.Collection.FindOne(ctx, bson.M{"name": name}).Decode(&res)
+	return res, err
+}
+
+func (r *CatalogRepository) GetByID(id string) (*model.StatusCatalog, error) {
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var result model.StatusCatalog
+	err = r.Collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }

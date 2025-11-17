@@ -1,3 +1,4 @@
+// catalog_service.go
 package service
 
 import (
@@ -33,6 +34,7 @@ func (s *CatalogService) SeedDefaultStatuses() error {
 		model.StatusCatalog{Name: "Enviado", CreatedAt: time.Now()},
 		model.StatusCatalog{Name: "Entregado", CreatedAt: time.Now()},
 		model.StatusCatalog{Name: "Cancelado", CreatedAt: time.Now()},
+		model.StatusCatalog{Name: "Rechazado", CreatedAt: time.Now()},
 	}
 
 	if err := s.Repo.InsertMany(defaults); err != nil {

@@ -1,3 +1,4 @@
+// auth_service.go
 package service
 
 import (
@@ -29,7 +30,7 @@ func NewAuthService() *AuthService {
 
 func (a *AuthService) IsAdmin(user *AuthUser) bool {
 	for _, perm := range user.Permissions {
-		if perm == "ADMIN" {
+		if perm == "admin" {
 			return true
 		}
 	}
@@ -63,6 +64,9 @@ func (a *AuthService) ValidateToken(token string) (*AuthUser, error) {
 	if !user.Enabled {
 		return nil, errors.New("user disabled")
 	}
+
+	fmt.Println("AUTH_SERVICE_URL =", a.authURL)
+	fmt.Println("Calling:", fmt.Sprintf("%s/users/current", a.authURL))
 
 	return &user, nil
 }
